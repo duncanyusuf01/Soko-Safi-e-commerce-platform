@@ -1,24 +1,20 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
+# Activate virtual environment
+source venv/bin/activate
 
-# Install Python dependencies from requirements.txt
-echo "Installing Python dependencies..."
-pip install -r requirements.txt
-
-# Apply database migrations (assuming Flask-Migrate or similar)
+# Apply database migrations
 echo "Applying database migrations..."
-# The 'flask' command should now be available after 'pip install'
 flask db upgrade
 
-# Start Gunicorn server for production
-echo "Starting production server (gunicorn)..."
-# Ensure 'gunicorn' is listed in your requirements.txt
-# Replace 'app:app' with the actual entry point of your Flask application
-# (e.g., if your Flask app instance is named `app` in a file called `app.py`,
-# then `app:app` is usually correct).
-# $PORT is an environment variable provided by Render.
-gunicorn --bind 0.0.0.0:${PORT} --workers 4 app:app
-
-# Do NOT include flask run for production deployments.
+# Determine how to run the application
+if command -v gunicorn &> /dev/null; then
+    echo "Starting production server (gunicorn)..."
+    gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 4 app:app
+else
+    echo "Gunicorn not found. Starting development server (flask run)..."
+    echo "WARNING: This is not suitable for production!"
+    export FLASK_APP=app.py
+    export FLASK_ENV=development
+    flask run --host=0.0.0.0 --port=${PORT:-8000}
+fi
