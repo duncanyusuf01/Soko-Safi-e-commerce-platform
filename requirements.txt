@@ -66,3 +66,4 @@ wcwidth==0.2.13
 Werkzeug==3.0.6
 wsproto==1.2.0
 zipp==3.20.2
+Flask-Bcrypt==1.0.1
