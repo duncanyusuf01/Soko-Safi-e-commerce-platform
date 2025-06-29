@@ -1,5 +1,3 @@
-// client/src/pages/ProductDetailPage.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserProvider';
@@ -53,85 +51,71 @@ function ProductDetailPage() {
         alert('Added to cart!');
     };
 
-    if (loading) return <p>Loading product...</p>;
-    if (!product) return <p>Product not found</p>;
+    if (loading) return <div className="text-center my-5">Loading product...</div>;
+    if (!product) return <div className="text-center text-danger my-5">Product not found</div>;
 
     return (
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-            <div style={{ display: 'flex', gap: '40px' }}>
-                <div style={{ flex: 1 }}>
-                    <img 
-                        src={product.image_url} 
-                        alt={product.name} 
-                        style={{ width: '100%', borderRadius: '8px' }} 
+        <div className="container py-5">
+            <div className="row g-5">
+                {/* Product Image */}
+                <div className="col-md-6">
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="img-fluid rounded shadow-sm"
                     />
                 </div>
-                <div style={{ flex: 1 }}>
-                    <h1>{product.name}</h1>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '20px 0' }}>
-                        ${product.price.toFixed(2)}
-                    </p>
-                    <p style={{ margin: '20px 0' }}>{product.description}</p>
-                    
-                    <div style={{ margin: '20px 0' }}>
-                        <p>Sold by: <a href={`/vendors/${product.vendor.id}`}>{product.vendor.username}</a></p>
-                    </div>
 
+                {/* Product Details */}
+                <div className="col-md-6">
+                    <h1 className="mb-3">{product.name}</h1>
+                    <h4 className="text-primary mb-4">${product.price.toFixed(2)}</h4>
+                    <p className="mb-4">{product.description}</p>
+
+                    <p className="mb-4">
+                        Sold by:{' '}
+                        <a href={`/vendors/${product.vendor.id}`} className="text-decoration-underline">
+                            {product.vendor.username}
+                        </a>
+                    </p>
+
+                    {/* Customer Actions */}
                     {user?.role === 'customer' && (
-                        <div style={{ marginTop: '40px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                <label htmlFor="quantity">Quantity:</label>
-                                <input 
-                                    type="number" 
-                                    id="quantity" 
-                                    min="1" 
+                        <div className="mb-4">
+                            <div className="mb-3 d-flex align-items-center gap-3">
+                                <label htmlFor="quantity" className="form-label m-0">
+                                    Quantity:
+                                </label>
+                                <input
+                                    type="number"
+                                    id="quantity"
+                                    min="1"
                                     value={quantity}
                                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value)))}
-                                    style={{ width: '60px', padding: '5px' }}
+                                    className="form-control"
+                                    style={{ width: '80px' }}
                                 />
                             </div>
-                            <button 
-                                onClick={addToCart}
-                                style={{ 
-                                    padding: '10px 20px', 
-                                    backgroundColor: '#007bff', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
+                            <button onClick={addToCart} className="btn btn-primary">
                                 Add to Cart
                             </button>
                         </div>
                     )}
 
+                    {/* Vendor Actions */}
                     {user?.id === product.vendor.id && (
-                        <div style={{ marginTop: '20px' }}>
-                            <button 
+                        <div className="mt-4">
+                            <button
                                 onClick={() => navigate(`/products/${product.id}/edit`)}
-                                style={{ 
-                                    padding: '10px 20px', 
-                                    backgroundColor: '#28a745', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    marginRight: '10px'
-                                }}
+                                className="btn btn-success me-2"
                             >
                                 Edit Product
                             </button>
-                            <button 
-                                onClick={() => {/* Add delete functionality */}}
-                                style={{ 
-                                    padding: '10px 20px', 
-                                    backgroundColor: '#dc3545', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
+                            <button
+                                onClick={() => {
+
                                 }}
+                                className="btn btn-danger"
                             >
                                 Delete Product
                             </button>

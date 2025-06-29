@@ -16,7 +16,6 @@ function MessagesPage() {
   const [vendorSearch, setVendorSearch] = useState('');
   const [selectedPartner, setSelectedPartner] = useState(null);
 
-  // Fetch conversations and set selected partner
   useEffect(() => {
     const fetchConversations = async () => {
       try {
@@ -25,15 +24,12 @@ function MessagesPage() {
         if (!response.ok) throw new Error('Failed to load conversations');
         const data = await response.json();
         setConversations(data);
-        
-        // Set the selected partner if userId exists in URL
         if (userId) {
-          const partner = data.find(conv => conv.partner_id.toString() === userId) || 
-                         { partner_id: parseInt(userId), partner_name: 'New Chat' };
+          const partner = data.find(conv => conv.partner_id.toString() === userId) ||
+            { partner_id: parseInt(userId), partner_name: 'New Chat' };
           setSelectedPartner(partner);
         }
       } catch (err) {
-        console.error("Error fetching conversations:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -41,9 +37,8 @@ function MessagesPage() {
     };
 
     fetchConversations();
-  }, [userId]); // Added userId as dependency
+  }, [userId]);
 
-  // Fetch vendors for new chat
   const fetchVendors = async () => {
     try {
       const response = await fetch('/vendors');
@@ -51,17 +46,13 @@ function MessagesPage() {
       const data = await response.json();
       setVendors(data);
     } catch (err) {
-      console.error("Error fetching vendors:", err);
       setError(err.message);
     }
   };
 
   const startNewChat = (vendorId, vendorName) => {
     navigate(`/messages/${vendorId}`);
-    setSelectedPartner({
-      partner_id: vendorId,
-      partner_name: vendorName
-    });
+    setSelectedPartner({ partner_id: vendorId, partner_name: vendorName });
     setShowNewChatModal(false);
   };
 
@@ -75,223 +66,116 @@ function MessagesPage() {
   );
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 100px)', backgroundColor: '#f9f9f9' }}>
-      {/* Conversations sidebar */}
-      <div style={{ width: '320px', borderRight: '1px solid #e0e0e0', padding: '16px', backgroundColor: 'white', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2>Conversations</h2>
-          <button
-            onClick={() => {
-              setShowNewChatModal(true);
-              fetchVendors();
-            }}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: '#2196F3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
+    <div className="d-flex" style={{ height: 'calc(100vh - 100px)' }}>
+      {/* Sidebar */}
+      <div className="border-end bg-white p-3 overflow-auto" style={{ width: '320px' }}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="m-0">Conversations</h5>
+          <button className="btn btn-sm btn-primary" onClick={() => {
+            setShowNewChatModal(true);
+            fetchVendors();
+          }}>
             New Chat
           </button>
         </div>
 
         <input
           type="text"
-          placeholder="Search conversations..."
+          className="form-control mb-3"
+          placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            border: '1px solid #ddd',
-            marginBottom: '16px'
-          }}
         />
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>Loading conversations...</p>
-          </div>
+          <div className="text-center text-muted">Loading...</div>
         ) : error ? (
-          <div style={{ color: 'red', padding: '10px' }}>
-            {error}
-          </div>
+          <div className="alert alert-danger">{error}</div>
         ) : filteredConversations.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-            <p>No conversations found</p>
-          </div>
+          <div className="text-center text-muted">No conversations</div>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul className="list-group">
             {filteredConversations.map(conv => (
-              <li 
+              <li
                 key={conv.partner_id}
-                style={{
-                  padding: '12px',
-                  marginBottom: '8px',
-                  cursor: 'pointer',
-                  borderRadius: '4px',
-                  backgroundColor: selectedPartner?.partner_id === conv.partner_id ? '#e3f2fd' : 'transparent',
-                  transition: 'background-color 0.2s',
-                  ':hover': {
-                    backgroundColor: '#f5f5f5'
-                  }
-                }}
+                className={`list-group-item list-group-item-action ${selectedPartner?.partner_id === conv.partner_id ? 'active' : ''}`}
                 onClick={() => {
                   navigate(`/messages/${conv.partner_id}`);
                   setSelectedPartner(conv);
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <strong style={{ fontSize: '1.1em' }}>{conv.partner_name}</strong>
-                  {!conv.read && (
-                    <span style={{
-                      display: 'inline-block',
-                      width: '10px',
-                      height: '10px',
-                      borderRadius: '50%',
-                      backgroundColor: '#2196f3'
-                    }}></span>
-                  )}
+                <div className="d-flex justify-content-between align-items-center">
+                  <strong>{conv.partner_name}</strong>
+                  {!conv.read && <span className="badge bg-primary rounded-circle" style={{ width: '10px', height: '10px' }}></span>}
                 </div>
-                <p style={{ 
-                  margin: '4px 0', 
-                  fontSize: '0.9em',
-                  color: '#666',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>
-                  {conv.last_message}
-                </p>
-                <small style={{ color: '#999', fontSize: '0.8em' }}>
-                  {new Date(conv.timestamp).toLocaleString()}
-                </small>
+                <small className="text-muted d-block text-truncate">{conv.last_message}</small>
+                <small className="text-muted">{new Date(conv.timestamp).toLocaleString()}</small>
               </li>
             ))}
           </ul>
         )}
-
-        {/* New Chat Modal */}
-        {showNewChatModal && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '400px',
-              maxHeight: '80vh',
-              overflowY: 'auto'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3>Start New Chat</h3>
-                <button 
-                  onClick={() => setShowNewChatModal(false)}
-                  style={{ background: 'none', border: 'none', fontSize: '1.5em', cursor: 'pointer' }}
-                >
-                  &times;
-                </button>
-              </div>
-              
-              <input
-                type="text"
-                placeholder="Search vendors..."
-                value={vendorSearch}
-                onChange={(e) => setVendorSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  marginBottom: '16px'
-                }}
-              />
-              
-              {vendors.length === 0 ? (
-                <p>Loading vendors...</p>
-              ) : filteredVendors.length === 0 ? (
-                <p>No vendors found</p>
-              ) : (
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {filteredVendors.map(vendor => (
-                    <li 
-                      key={vendor.id}
-                      style={{
-                        padding: '12px',
-                        borderBottom: '1px solid #eee',
-                        cursor: 'pointer',
-                        ':hover': {
-                          backgroundColor: '#f5f5f5'
-                        }
-                      }}
-                      onClick={() => startNewChat(vendor.id, vendor.username)}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '50%',
-                          backgroundColor: '#e0e0e0',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: '12px'
-                        }}>
-                          {vendor.username.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <strong>{vendor.username}</strong>
-                          <p style={{ margin: 0, color: '#666' }}>{vendor.email}</p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        )}
       </div>
-      
+
       {/* Chat area */}
-      <div style={{ 
-        flex: 1, 
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'white'
-      }}>
+      <div className="flex-grow-1 p-3 bg-white d-flex flex-column">
         {selectedPartner ? (
           <ChatInterface partnerId={selectedPartner.partner_id} partnerName={selectedPartner.partner_name} />
         ) : (
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '100%',
-            textAlign: 'center',
-            color: '#666'
-          }}>
-            <h3>No conversation selected</h3>
+          <div className="d-flex flex-column justify-content-center align-items-center h-100 text-muted text-center">
+            <h4>No conversation selected</h4>
             <p>Select a conversation from the list or start a new one</p>
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {showNewChatModal && (
+        <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Start New Chat</h5>
+                <button type="button" className="btn-close" onClick={() => setShowNewChatModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Search vendors..."
+                  value={vendorSearch}
+                  onChange={(e) => setVendorSearch(e.target.value)}
+                />
+
+                {vendors.length === 0 ? (
+                  <div>Loading vendors...</div>
+                ) : filteredVendors.length === 0 ? (
+                  <div>No vendors found</div>
+                ) : (
+                  <ul className="list-group">
+                    {filteredVendors.map(vendor => (
+                      <li
+                        key={vendor.id}
+                        className="list-group-item list-group-item-action"
+                        onClick={() => startNewChat(vendor.id, vendor.username)}
+                      >
+                        <div className="d-flex align-items-center">
+                          <div className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '40px', height: '40px' }}>
+                            {vendor.username.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <strong>{vendor.username}</strong>
+                            <div className="text-muted">{vendor.email}</div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

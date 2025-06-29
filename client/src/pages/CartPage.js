@@ -1,5 +1,3 @@
-// client/src/pages/CartPage.js
-
 import React, { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../context/UserProvider';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +7,6 @@ function CartPage() {
     const [cart, setCart] = useState([]);
     const navigate = useNavigate();
 
-    // Load cart from localStorage
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
@@ -24,7 +21,7 @@ function CartPage() {
     };
 
     const updateQuantity = (productId, newQuantity) => {
-        const updatedCart = cart.map(item => 
+        const updatedCart = cart.map(item =>
             item.product_id === productId ? { ...item, quantity: newQuantity } : item
         );
         setCart(updatedCart);
@@ -62,45 +59,49 @@ function CartPage() {
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     return (
-        <div>
-            <h1>Your Cart</h1>
+        <div className="container py-5">
+            <h1 className="mb-4 text-center">Your Cart</h1>
             {cart.length === 0 ? (
-                <p>Your cart is empty</p>
+                <div className="alert alert-info text-center">Your cart is empty</div>
             ) : (
                 <>
-                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                    <ul className="list-group mb-4">
                         {cart.map(item => (
-                            <li key={item.product_id} style={{ 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center',
-                                margin: '10px 0',
-                                padding: '10px',
-                                border: '1px solid #eee'
-                            }}>
-                                <div>
-                                    <h3>{item.name}</h3>
-                                    <p>${item.price.toFixed(2)} each</p>
+                            <li
+                                key={item.product_id}
+                                className="list-group-item d-flex justify-content-between align-items-center flex-wrap"
+                            >
+                                <div className="flex-grow-1">
+                                    <h5>{item.name}</h5>
+                                    <p className="mb-1 text-muted">${item.price.toFixed(2)} each</p>
                                 </div>
-                                <div>
-                                    <input 
-                                        type="number" 
-                                        min="1" 
+                                <div className="d-flex align-items-center gap-2">
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        className="form-control"
+                                        style={{ width: '70px' }}
                                         value={item.quantity}
-                                        onChange={(e) => updateQuantity(item.product_id, parseInt(e.target.value))}
-                                        style={{ width: '50px', marginRight: '10px' }}
+                                        onChange={(e) =>
+                                            updateQuantity(item.product_id, parseInt(e.target.value))
+                                        }
                                     />
-                                    <button onClick={() => removeFromCart(item.product_id)}>
+                                    <button
+                                        className="btn btn-outline-danger btn-sm"
+                                        onClick={() => removeFromCart(item.product_id)}
+                                    >
                                         Remove
                                     </button>
                                 </div>
-                                <p>${(item.price * item.quantity).toFixed(2)}</p>
+                                <div>
+                                    <strong>${(item.price * item.quantity).toFixed(2)}</strong>
+                                </div>
                             </li>
                         ))}
                     </ul>
-                    <div style={{ textAlign: 'right', marginTop: '20px' }}>
-                        <h3>Total: ${totalPrice.toFixed(2)}</h3>
-                        <button onClick={placeOrder} style={{ padding: '10px 20px' }}>
+                    <div className="text-end">
+                        <h4 className="mb-3">Total: ${totalPrice.toFixed(2)}</h4>
+                        <button className="btn btn-success px-4" onClick={placeOrder}>
                             Place Order
                         </button>
                     </div>

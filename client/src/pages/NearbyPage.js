@@ -1,4 +1,3 @@
-// client/src/pages/NearbyPage.js
 import React, { useState, useEffect } from 'react';
 import VendorCard from '../components/VendorCard';
 
@@ -12,18 +11,18 @@ function NearbyPage() {
   useEffect(() => {
     const fetchLocationAndVendors = async () => {
       try {
-        let coords = { lat: -1.2921, lng: 36.8219 }; // Default to Nairobi
-        
+        let coords = { lat: -1.2921, lng: 36.8219 };
+
         if (navigator.geolocation) {
-          const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-          });
+          const position = await new Promise((resolve, reject) =>
+            navigator.geolocation.getCurrentPosition(resolve, reject)
+          );
           coords = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
         }
-        
+
         setLocation(coords);
         await fetchNearbyVendors(coords.lat, coords.lng);
       } catch (err) {
@@ -50,102 +49,76 @@ function NearbyPage() {
     }
   };
 
-  if (loading) {
-    return <div style={{ padding: '20px' }}>Loading vendors near you...</div>;
-  }
+  if (loading) return <div className="text-center my-5"><div className="spinner-border" role="status" /></div>;
 
   if (error) {
     return (
-      <div style={{ padding: '20px', color: 'red' }}>
-        {error}
+      <div className="container mt-4">
+        <div className="alert alert-danger">{error}</div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Vendors Near You</h1>
-      
-      <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f5f5f5', borderRadius: '5px' }}>
-        <p>
-          <strong>Your location:</strong> {location ? 
-            `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}` : 
-            'Unknown'}
+    <div className="container py-4">
+      <h1 className="mb-3 text-primary">Vendors Near You</h1>
+
+      <div className="alert alert-info">
+        <p className="mb-1">
+          <strong>Your location:</strong>{' '}
+          {location ? `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}` : 'Unknown'}
         </p>
         {vendors.length > 0 && (
-          <p>
-            <strong>Showing {vendors.length} vendors within 10km radius</strong>
+          <p className="mb-0">
+            <strong>{vendors.length} vendor(s)</strong> within a 10 km radius
           </p>
         )}
       </div>
-      
-      {selectedVendor && (
-        <div style={{ 
-          marginBottom: '40px', 
-          padding: '20px', 
-          border: '1px solid #eee', 
-          borderRadius: '8px'
-        }}>
-          <h2>Selected Vendor: {selectedVendor.username}</h2>
-          <VendorCard vendor={selectedVendor} />
-        </div>
-      )}
-      
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        <div style={{ flex: 2, minWidth: '300px' }}>
-          <h2>Vendors by Distance</h2>
-          <div style={{ 
-            maxHeight: '500px', 
-            overflowY: 'auto', 
-            border: '1px solid #eee', 
-            borderRadius: '8px',
-            padding: '10px'
-          }}>
+
+      <div className="row">
+        {/* Left: List of vendors */}
+        <div className="col-md-5 mb-4">
+          <h4 className="text-secondary mb-3">Nearby Vendors</h4>
+          <div className="border rounded shadow-sm p-2 bg-white" style={{ maxHeight: '520px', overflowY: 'auto' }}>
             {vendors.length > 0 ? (
-              <ul style={{ listStyle: 'none', padding: 0 }}>
+              <ul className="list-group list-group-flush">
                 {vendors
                   .sort((a, b) => a.distance - b.distance)
-                  .map(vendor => (
-                    <li 
-                      key={vendor.id} 
-                      style={{ 
-                        margin: '10px 0', 
-                        padding: '10px',
-                        backgroundColor: selectedVendor?.id === vendor.id ? '#f0f0f0' : 'white',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                      }}
+                  .map((vendor) => (
+                    <li
+                      key={vendor.id}
+                      className={`list-group-item list-group-item-action ${selectedVendor?.id === vendor.id ? 'active' : ''
+                        }`}
+                      role="button"
                       onClick={() => setSelectedVendor(vendor)}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div className="d-flex justify-content-between align-items-center">
                         <strong>{vendor.username}</strong>
-                        <span>{vendor.distance.toFixed(1)} km</span>
+                        <span className="badge bg-primary">{vendor.distance.toFixed(1)} km</span>
                       </div>
-                      <p style={{ margin: '5px 0', color: '#666' }}>{vendor.address}</p>
-                      <p style={{ margin: '5px 0', fontSize: '0.9em' }}>
-                        {vendor.products?.length || 0} products available
-                      </p>
+                      <p className="mb-1 text-muted small">{vendor.address}</p>
+                      <small className="text-secondary">
+                        {vendor.products?.length || 0} product(s)
+                      </small>
                     </li>
                   ))}
               </ul>
             ) : (
-              <p>No vendors found in your area.</p>
+              <div className="text-muted text-center py-3">No vendors found in your area.</div>
             )}
           </div>
         </div>
-        
-        <div style={{ flex: 3, minWidth: '300px' }}>
-          <h2>Vendor Details</h2>
+
+        {/* Right: Selected vendor details */}
+        <div className="col-md-7 mb-4">
+          <h4 className="text-secondary mb-3">Vendor Details</h4>
           {selectedVendor ? (
-            <VendorCard vendor={selectedVendor} expanded />
+            <div className="bg-light border rounded shadow-sm p-3">
+              <VendorCard vendor={selectedVendor} expanded />
+            </div>
           ) : (
-            <div style={{ 
-              padding: '20px', 
-              border: '1px dashed #ccc', 
-              borderRadius: '8px',
-              textAlign: 'center'
-            }}>
-              <p>Select a vendor to view details</p>
+            <div className="border border-2 border-dashed p-5 text-center text-muted rounded">
+              <p>Select a vendor from the list to view more details</p>
             </div>
           )}
         </div>
