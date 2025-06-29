@@ -4,6 +4,7 @@ import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserProvider';
 import { FaShoppingCart, FaStore, FaMapMarkerAlt, FaComments, FaUser } from 'react-icons/fa';
+import { IconName } from "react-icons/fa";
 
 function NavBar() {
     const { user, logout } = useContext(UserContext);
