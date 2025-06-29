@@ -27,7 +27,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.json.compact = False  # Prettify JSON responses
-    app.secret_key = b'\x9c\x02\x1e\x87\xe8\xde\n\xe0\x91\xe2\x15\xc8\x04\x0e\xde\xb5' # Replace with a real secret key
+    app.secret_key = b'\x9c\x02\x1e\x87\xe8\xde\n\xe0\x91\xe2\x15\xc8\x04\x0e\xde\xb5'
 
     # Initialize extensions
     db.init_app(app)
