@@ -14,9 +14,6 @@ api = Api(app)
 bcrypt = Bcrypt(app)
 
 # --- AUTHENTICATION ROUTES ---
-@app.route('/')
-def index():
-    return {"message": "Server is running!"}, 200
 class Signup(Resource):
     def post(self):
         data = request.get_json()
