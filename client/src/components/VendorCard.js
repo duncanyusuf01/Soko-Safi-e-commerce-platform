@@ -1,38 +1,56 @@
-// client/src/components/VendorCard.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function VendorCard({ vendor, onClick, expanded = false }) {
-  const cardStyle = {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '16px',
-    cursor: onClick ? 'pointer' : 'default',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    margin: '10px',
-    width: expanded ? '100%' : '250px'
-  };
+function VendorCard({ vendor = {}, onClick, expanded = false }) {
+  const {
+    id = '',
+    username = 'Unknown Vendor',
+    email = 'N/A',
+    address = 'N/A',
+    distance = null,
+    products = []
+  } = vendor;
 
   return (
-    <div style={cardStyle} onClick={onClick}>
-      <h3>
-        <Link to={`/vendors/${vendor.id}`}>{vendor.username}</Link>
-      </h3>
-      {expanded && (
-        <>
-          <p>Email: {vendor.email}</p>
-          <p>Address: {vendor.address}</p>
-          <p>Distance: {vendor.distance ? `${vendor.distance.toFixed(1)} km away` : 'Unknown'}</p>
-          <h4>Products:</h4>
-          <ul>
-            {(vendor.products || []).slice(0, 5).map(product => (
-              <li key={product.id}>
-                <Link to={`/products/${product.id}`}>{product.name}</Link> - ${product.price}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+    <div
+      className={`card shadow-sm mb-3 ${onClick ? 'cursor-pointer' : ''}`}
+      style={{ width: expanded ? '100%' : '250px', cursor: onClick ? 'pointer' : 'default' }}
+      onClick={onClick}
+    >
+      <div className="card-body">
+        <h5 className="card-title">
+          <Link to={`/vendors/${id}`} className="text-decoration-none text-dark">
+            {username}
+          </Link>
+        </h5>
+
+        {expanded && (
+          <>
+            <p className="card-text mb-1"><strong>Email:</strong> {email}</p>
+            <p className="card-text mb-1"><strong>Address:</strong> {address}</p>
+            <p className="card-text mb-3">
+              <strong>Distance:</strong>{' '}
+              {distance !== null ? `${distance.toFixed(1)} km away` : 'Unknown'}
+            </p>
+
+            <h6>Products:</h6>
+            {products.length === 0 ? (
+              <p className="text-muted">No products listed.</p>
+            ) : (
+              <ul className="list-unstyled ps-3">
+                {products.slice(0, 5).map(product => (
+                  <li key={product.id}>
+                    <Link to={`/products/${product.id}`} className="text-primary">
+                      {product.name}
+                    </Link>{' '}
+                    - ${product.price}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

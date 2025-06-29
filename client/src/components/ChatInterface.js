@@ -1,6 +1,4 @@
-// client/src/components/ChatInterface.js
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 
 function ChatInterface({ partnerId, partnerName }) {
   const [messages, setMessages] = useState([]);
@@ -15,7 +13,7 @@ function ChatInterface({ partnerId, partnerName }) {
         const response = await fetch(`/messages/${partnerId}`);
         if (!response.ok) throw new Error('Failed to load messages');
         const data = await response.json();
-        setMessages(Array.isArray(data) ? data : []); // Ensure messages is always an array
+        setMessages(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching messages:", err);
         setError(err.message);
@@ -31,7 +29,7 @@ function ChatInterface({ partnerId, partnerName }) {
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
-    
+
     try {
       const response = await fetch('/messages', {
         method: 'POST',
@@ -41,7 +39,7 @@ function ChatInterface({ partnerId, partnerName }) {
           recipient_id: partnerId
         })
       });
-      
+
       if (response.ok) {
         const message = await response.json();
         setMessages(prev => [...prev, message]);
@@ -52,66 +50,48 @@ function ChatInterface({ partnerId, partnerName }) {
     }
   };
 
-  if (loading) return <div>Loading messages...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="text-center py-3">Loading messages...</div>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '16px', borderBottom: '1px solid #eee' }}>
-        <h3>Chat with {partnerName}</h3>
+    <div className="d-flex flex-column border rounded shadow-sm" style={{ height: '500px' }}>
+      <div className="border-bottom px-3 py-2 bg-light">
+        <h5 className="mb-0">Chat with {partnerName}</h5>
       </div>
-      
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+
+      <div className="flex-grow-1 overflow-auto p-3" style={{ backgroundColor: '#f8f9fa' }}>
         {messages.length === 0 ? (
-          <p>No messages yet. Start the conversation!</p>
+          <p className="text-muted">No messages yet. Start the conversation!</p>
         ) : (
-          messages.map((msg) => (
-            <div key={msg.id} style={{ 
-              marginBottom: '12px',
-              textAlign: msg.sender_id === partnerId ? 'left' : 'right'
-            }}>
-              <div style={{
-                display: 'inline-block',
-                padding: '8px 12px',
-                borderRadius: '12px',
-                backgroundColor: msg.sender_id === partnerId ? '#f1f1f1' : '#2196F3',
-                color: msg.sender_id === partnerId ? '#333' : 'white'
-              }}>
-                {msg.content}
-              </div>
-              <div style={{ 
-                fontSize: '0.8em', 
-                color: '#666',
-                textAlign: msg.sender_id === partnerId ? 'left' : 'right'
-              }}>
-                {new Date(msg.timestamp).toLocaleTimeString()}
+          messages.map(msg => (
+            <div
+              key={msg.id}
+              className={`mb-3 d-flex ${msg.sender_id === partnerId ? 'justify-content-start' : 'justify-content-end'}`}
+            >
+              <div>
+                <div className={`p-2 rounded ${msg.sender_id === partnerId ? 'bg-secondary text-white' : 'bg-primary text-white'}`}>
+                  {msg.content}
+                </div>
+                <div className="small text-muted text-end mt-1">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </div>
               </div>
             </div>
           ))
         )}
       </div>
-      
-      <div style={{ padding: '16px', borderTop: '1px solid #eee' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
+
+      <div className="border-top p-3 bg-white">
+        <div className="input-group">
           <input
             type="text"
+            className="form-control"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             placeholder="Type your message..."
-            style={{ flex: 1, padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd' }}
           />
-          <button
-            onClick={sendMessage}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#2196F3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
+          <button className="btn btn-primary" onClick={sendMessage}>
             Send
           </button>
         </div>

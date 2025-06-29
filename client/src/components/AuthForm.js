@@ -1,5 +1,3 @@
-// client/src/components/AuthForm.js
-
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -10,17 +8,13 @@ function AuthForm({ isLogin }) {
     const { login } = useContext(UserContext);
     const navigate = useNavigate();
 
-    // Validation Schema using Yup
     const validationSchema = Yup.object({
         username: Yup.string().required('Required'),
-        password: Yup.string()
-            .min(6, 'Must be at least 6 characters')
-            .required('Required'),
-        // Conditional validation for sign up
+        password: Yup.string().min(6, 'Must be at least 6 characters').required('Required'),
         ...(!isLogin && {
-            email: Yup.string().email('Invalid email format').required('Required'), // String format validation
-            role: Yup.string().oneOf(['customer', 'vendor']).required('Required')
-        })
+            email: Yup.string().email('Invalid email format').required('Required'),
+            role: Yup.string().oneOf(['customer', 'vendor']).required('Required'),
+        }),
     });
 
     const formik = useFormik({
@@ -55,39 +49,73 @@ function AuthForm({ isLogin }) {
 
     return (
         <form onSubmit={formik.handleSubmit}>
-            <div>
-                <label htmlFor="username">Username</label>
-                <input id="username" type="text" {...formik.getFieldProps('username')} />
-                {formik.touched.username && formik.errors.username ? <div>{formik.errors.username}</div> : null}
+            <div className="mb-3">
+                <label htmlFor="username" className="form-label">Username</label>
+                <input
+                    id="username"
+                    type="text"
+                    className={`form-control ${formik.touched.username && formik.errors.username ? 'is-invalid' : ''}`}
+                    {...formik.getFieldProps('username')}
+                />
+                {formik.touched.username && formik.errors.username && (
+                    <div className="invalid-feedback">{formik.errors.username}</div>
+                )}
             </div>
-            
+
             {!isLogin && (
                 <>
-                    <div>
-                        <label htmlFor="email">Email</label>
-                        <input id="email" type="email" {...formik.getFieldProps('email')} />
-                        {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            className={`form-control ${formik.touched.email && formik.errors.email ? 'is-invalid' : ''}`}
+                            {...formik.getFieldProps('email')}
+                        />
+                        {formik.touched.email && formik.errors.email && (
+                            <div className="invalid-feedback">{formik.errors.email}</div>
+                        )}
                     </div>
-                    <div>
-                        <label htmlFor="role">I am a:</label>
-                        <select id="role" {...formik.getFieldProps('role')}>
+
+                    <div className="mb-3">
+                        <label htmlFor="role" className="form-label">I am a:</label>
+                        <select
+                            id="role"
+                            className={`form-select ${formik.touched.role && formik.errors.role ? 'is-invalid' : ''}`}
+                            {...formik.getFieldProps('role')}
+                        >
                             <option value="customer">Customer</option>
                             <option value="vendor">Vendor</option>
                         </select>
-                        {formik.touched.role && formik.errors.role ? <div>{formik.errors.role}</div> : null}
+                        {formik.touched.role && formik.errors.role && (
+                            <div className="invalid-feedback">{formik.errors.role}</div>
+                        )}
                     </div>
                 </>
             )}
 
-            <div>
-                <label htmlFor="password">Password</label>
-                <input id="password" type="password" {...formik.getFieldProps('password')} />
-                {formik.touched.password && formik.errors.password ? <div>{formik.errors.password}</div> : null}
+            <div className="mb-3">
+                <label htmlFor="password" className="form-label">Password</label>
+                <input
+                    id="password"
+                    type="password"
+                    className={`form-control ${formik.touched.password && formik.errors.password ? 'is-invalid' : ''}`}
+                    {...formik.getFieldProps('password')}
+                />
+                {formik.touched.password && formik.errors.password && (
+                    <div className="invalid-feedback">{formik.errors.password}</div>
+                )}
             </div>
 
-            {formik.errors.api && <div>{formik.errors.api}</div>}
+            {formik.errors.api && (
+                <div className="alert alert-danger">{formik.errors.api}</div>
+            )}
 
-            <button type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
+            <div className="d-grid">
+                <button type="submit" className="btn btn-primary">
+                    {isLogin ? 'Login' : 'Sign Up'}
+                </button>
+            </div>
         </form>
     );
 }
