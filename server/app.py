@@ -294,6 +294,11 @@ class MessagesBetween(Resource):
         
         return make_response(jsonify([m.to_dict() for m in messages]), 200)
 
+class Vendors(Resource):
+    def get(self):
+        vendors = User.query.filter_by(role='vendor').all()
+        return make_response(jsonify([v.to_dict(rules=('-products', '-orders')) for v in vendors]), 200)
+
 # Add resources to API
 api.add_resource(Signup, '/signup', endpoint='signup')
 api.add_resource(Login, '/login', endpoint='login')
@@ -307,6 +312,8 @@ api.add_resource(VendorByID, '/vendors/<int:id>', endpoint='vendor_by_id')
 api.add_resource(NearbyVendors, '/vendors/nearby', endpoint='nearby_vendors')
 api.add_resource(Messages, '/messages', endpoint='messages')
 api.add_resource(MessagesBetween, '/messages/<int:user_id>', endpoint='messages_between')
+
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
