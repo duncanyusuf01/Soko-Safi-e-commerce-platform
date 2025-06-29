@@ -8,9 +8,12 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Function to check session from backend
   const checkSession = useCallback(async () => {
     try {
-      const response = await fetch('/check_session');
+      const response = await fetch('/check_session', {
+        credentials: 'include',
+      });
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
@@ -25,19 +28,23 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    checkSession();
-  }, [checkSession]);
-
+  // ✅ Function to manually log in a user (e.g. after successful login form)
   const login = (userData) => {
     setUser(userData);
   };
 
+  // ✅ Logout
   const logout = async () => {
-    await fetch('/logout', { method: 'DELETE' });
+    await fetch('/logout', { method: 'DELETE', credentials: 'include' });
     setUser(null);
   };
 
+  // ✅ Check session on component mount
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
+  // ✅ Context value
   const value = { user, login, logout, loading, refetchUser: checkSession };
 
   return (
