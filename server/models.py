@@ -59,6 +59,18 @@ class Message(db.Model, SerializerMixin):
     
     serialize_rules = ('-sender.sent_messages', '-sender.received_messages',
                      '-recipient.sent_messages', '-recipient.received_messages')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'content': self.content,
+            'timestamp': self.timestamp.isoformat(),
+            'sender_id': self.sender_id,
+            'recipient_id': self.recipient_id,
+            'read': self.read,
+            'sender_name': self.sender.username,
+            'recipient_name': self.recipient.username
+        }
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = 'products'

@@ -279,20 +279,31 @@ class Messages(Resource):
 
 class MessagesBetween(Resource):
     def get(self, user_id):
-        current_user_id = session.get('user_id')
-        if not current_user_id:
-            return make_response({"error": "Unauthorized"}, 401)
-        
-        messages = Message.query.filter(
-            ((Message.sender_id == current_user_id) & (Message.recipient_id == user_id)) |
-            ((Message.sender_id == user_id) & (Message.recipient_id == current_user_id))
-        ).order_by(Message.timestamp.asc()).all()
-        
-        # Mark messages as read
-        Message.query.filter_by(recipient_id=current_user_id, sender_id=user_id, read=False).update({'read': True})
-        db.session.commit()
-        
-        return make_response(jsonify([m.to_dict() for m in messages]), 200)
+        try:
+            current_user_id = session.get('user_id')
+            if not current_user_id:
+                return make_response({"error": "Unauthorized"}, 401)
+            
+            messages = Message.query.filter(
+                ((Message.sender_id == current_user_id) & (Message.recipient_id == user_id)) |
+                ((Message.sender_id == user_id) & (Message.recipient_id == current_user_id))
+            ).order_by(Message.timestamp.asc()).all()
+            
+            messages_data = [{
+                'id': msg.id,
+                'content': msg.content,
+                'timestamp': msg.timestamp.isoformat(),
+                'sender_id': msg.sender_id,
+                'recipient_id': msg.recipient_id,
+                'read': msg.read,
+                'sender_name': msg.sender.username,
+                'recipient_name': msg.recipient.username
+            } for msg in messages]
+            
+            return make_response(jsonify(messages_data), 200)
+            
+        except Exception as e:
+            return make_response({"error": str(e), "messages": []}, 500)
 
 class Vendors(Resource):
     def get(self):
