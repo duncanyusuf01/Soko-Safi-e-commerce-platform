@@ -4,7 +4,7 @@ from flask import request, session, make_response, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS
 from .config import create_app, db
-from .models import User, Product, Order
+from models import User, Product, Order
 from flask_bcrypt import Bcrypt
 from math import radians, sin, cos, sqrt, atan2
 

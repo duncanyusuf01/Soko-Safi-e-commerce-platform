@@ -3,7 +3,7 @@
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
-from .config import db, create_app
+from config import db, create_app
 
 # Association Table for Many-to-Many relationship between Order and Product
 order_item = db.Table(
