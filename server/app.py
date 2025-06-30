@@ -9,7 +9,9 @@ from flask_bcrypt import Bcrypt
 from math import radians, sin, cos, sqrt, atan2
 
 app = create_app()
-CORS(app, supports_credentials=True) # Enable CORS
+CORS(app, 
+resources={r"/*": {"origins": ["https://soko-safi-frontend.vercel.app"]}},
+supports_credentials=True) # Enable CORS
 api = Api(app)
 bcrypt = Bcrypt(app)
 

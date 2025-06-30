@@ -33,6 +33,12 @@ def create_app():
     app.json.compact = False  # Prettify JSON responses
     app.secret_key = b'fbc39b2b7e2e42973ec88ef43a265900435fbcc526a9b254a0cd20c1623dd259'
 
+    app.config,.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+    )
+    
     # Initialize extensions
     db.init_app(app)
     Migrate(app, db)

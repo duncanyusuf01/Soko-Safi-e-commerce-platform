@@ -28,7 +28,7 @@ function AuthForm({ isLogin }) {
         onSubmit: async (values, { setErrors }) => {
             const endpoint = isLogin ? '/login' : '/signup';
             try {
-                const response = await fetch(endpoint, {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(values),

@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "https://soko-safi-frontend.vercel.app/api/$1"
+        }
+    ]
+}
