@@ -1,8 +1,8 @@
-"""Initial migration
+"""empty message
 
-Revision ID: 17f7ca223b68
+Revision ID: 9ff13fa1cb7b
 Revises: 
-Create Date: 2025-06-29 11:32:12.768127
+Create Date: 2025-06-30 13:29:23.288990
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '17f7ca223b68'
+revision = '9ff13fa1cb7b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,7 +34,7 @@ def upgrade():
     op.create_table('messages',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('content', sa.String(), nullable=False),
-    sa.Column('timestamp', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('timestamp', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('sender_id', sa.Integer(), nullable=False),
     sa.Column('recipient_id', sa.Integer(), nullable=False),
     sa.Column('read', sa.Boolean(), nullable=True),
@@ -44,7 +44,7 @@ def upgrade():
     )
     op.create_table('orders',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('order_date', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('order_date', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('status', sa.String(), nullable=True),
     sa.Column('customer_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['customer_id'], ['users.id'], name=op.f('fk_orders_customer_id_users')),

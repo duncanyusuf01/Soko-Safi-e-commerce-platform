@@ -19,7 +19,7 @@ db = SQLAlchemy(metadata=metadata)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Define the database URI
 DATABASE_URI = os.environ.get(
-    "DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'app.db')}"
+    "DB_URI", f"postgresql://soko_safi_db_user:HMVhb7WW5W7N02Ki7VFweUKv7IFaOQfM@dpg-d1go76fgi27c73bvasug-a.oregon-postgres.render.com/soko_safi_db"
 )
 
 def create_app():
