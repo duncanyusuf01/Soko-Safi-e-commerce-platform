@@ -10,10 +10,28 @@ from math import radians, sin, cos, sqrt, atan2
 
 app = create_app()
 CORS(app, 
-resources={r"/*": {"origins": ["https://soko-safi-frontend.vercel.app"]}},
-supports_credentials=True) # Enable CORS
+resources={
+    r"/*": {
+        "origins": [
+            "https://soko-safi-frontend.vercel.app",
+            "http://localhost:3000",
+        ],
+        "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+        }
+    }
+)
+
+# supports_credentials=True) # Enable CORS
 api = Api(app)
 bcrypt = Bcrypt(app)
+
+app.config,.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+)
 
 # --- AUTHENTICATION ROUTES ---
 class Signup(Resource):

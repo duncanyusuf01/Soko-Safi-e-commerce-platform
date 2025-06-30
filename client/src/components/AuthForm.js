@@ -32,6 +32,7 @@ function AuthForm({ isLogin }) {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(values),
+                    credentials: 'include', // Include cookies for session management 
                 });
                 if (response.ok) {
                     const userData = await response.json();
