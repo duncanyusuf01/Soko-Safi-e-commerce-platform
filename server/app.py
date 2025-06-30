@@ -7,6 +7,7 @@ from config import create_app, db
 from models import User, Product, Order
 from flask_bcrypt import Bcrypt
 from math import radians, sin, cos, sqrt, atan2
+from flask_migrate import Migrate
 
 app = create_app()
 CORS(app, supports_credentials=True) # Enable CORS
