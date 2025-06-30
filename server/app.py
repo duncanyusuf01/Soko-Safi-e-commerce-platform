@@ -27,7 +27,7 @@ resources={
 api = Api(app)
 bcrypt = Bcrypt(app)
 
-app.config,.update(
+app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
